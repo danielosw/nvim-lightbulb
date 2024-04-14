@@ -69,11 +69,11 @@ local function update_float(opts, position, bufnr)
 
   -- Open the window and set highlight
   local _, lightbulb_win = lsp_util.open_floating_preview({ opts.text }, "plaintext", opts.win_opts)
-  vim.api.nvim_win_set_option(lightbulb_win, "winhl", "Normal:" .. opts.hl)
+  vim.api.nvim_set_option_value("winhl", "Normal:" .. opts.hl, { win = lightbulb_win})
 
   -- Set float transparency
   if opts.win_opts["winblend"] ~= nil then
-    vim.api.nvim_win_set_option(lightbulb_win, "winblend", opts.win_opts.winblend)
+    vim.api.nvim_set_option_value("winblend", opts.win_opts.winblend, { win = lightbulb_win })
   end
 
   vim.b[bufnr].lightbulb_floating_window = lightbulb_win
@@ -234,7 +234,7 @@ NvimLightbulb.update_lightbulb = function(config)
 
   -- Check for code action capability
   local code_action_cap_found = false
-  for _, client in pairs(vim.lsp.get_active_clients({ bufnr = bufnr })) do
+  for _, client in pairs(vim.lsp.get_clients({ bufnr = bufnr })) do
     if client and client.supports_method("textDocument/codeAction") then
       -- If it is ignored, add the id to the ignore table for the handler
       if ignored_clients[client.name] then
@@ -343,7 +343,7 @@ NvimLightbulb.debug = function(config)
   local code_action_servers = {}
   local ignored_servers = {}
 
-  for _, client in pairs(vim.lsp.get_active_clients({ bufnr = bufnr })) do
+  for _, client in pairs(vim.lsp.get_clients({ bufnr = bufnr })) do
     if client and client.supports_method("textDocument/codeAction") then
       client_id_to_name[client.id] = client.name
 
